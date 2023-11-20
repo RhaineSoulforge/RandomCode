@@ -1,12 +1,20 @@
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// File:	 CString.cpp
+// Author:  Jason A. Biddle
+//
+// Purpose:  A Java style string written in C++.
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include "CString.h"
 #include <string>
 
+//Constructor
 CString::CString()
 {
    m_pValue = 0;
    m_unLength = 0;
 }
 
+//Constructor (C-style input)
 CString::CString(const char* pSource)
 {
    size_t nSize = strlen(pSource);
@@ -21,6 +29,7 @@ CString::CString(const char* pSource)
    m_pValue[nSize] = '\0';
 }
 
+//Constructor (CString input)
 CString::CString(const CString& pSource)
 {
    size_t nSize = strlen(pSource.m_pValue);
@@ -35,6 +44,7 @@ CString::CString(const CString& pSource)
    m_pValue[nSize] = '\0';
 }
 
+//Destructor (Clean up that memory!!!!)
 CString::~CString()
 {
    if (m_pValue)
@@ -222,6 +232,17 @@ std::ostream& operator<<(std::ostream& os, const CString& a)
    return os;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Function:  Empty
+// Last Modified:  November 20th, 2023 (JB)
+// Author:  Jason A. Biddle
+//
+// Purpose:  Checks to see if the string is empty.
+//
+// In:  None
+//
+// Out:  true if it is empty, false otherwise.
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool CString::Empty() const
 {
    if (this->m_pValue && this->m_unLength > 0)
@@ -229,8 +250,20 @@ bool CString::Empty() const
    return true;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Function:  TrimStart
+// Last Modified:  November 20th, 2023 (JB)
+// Author:  Jason A. Biddle
+//
+// Purpose:  Removes the specified character from the front of the string.
+//
+// In:  cDelim - The character to remove, defaults to a space.
+//
+// Out:  None
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CString::TrimStart(const char cDelim)
 {
+   //Do we start with the same character?  If so lets do this!
    if (m_pValue[0] == cDelim)
    {
       char* temp = m_pValue;
@@ -247,6 +280,17 @@ void CString::TrimStart(const char cDelim)
    }
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Function:  TrimEnd
+// Last Modified:  November 20th, 2023 (JB)
+// Author:  Jason A. Biddle
+//
+// Purpose:  Removes the specified character from the end of the string.
+//
+// In:  cDelim - The character to remove, defaults to a space.
+//
+// Out:  None
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CString::TrimEnd(const char cDelim)
 {
    if (m_pValue[m_unLength - 1] == cDelim)
@@ -263,6 +307,17 @@ void CString::TrimEnd(const char cDelim)
    }
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Function:  Trim
+// Last Modified:  November 20th, 2023 (JB) 
+// Author:  Jason A. Biddle
+//
+// Purpose:  Trims the specified character from the head and tail of the string.
+//
+// In:  cDelim - The character to remove, defaults to a space.
+//
+// Out:  None
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CString::Trim(const char cDelim)
 {
    if ((m_pValue[0] == cDelim) && (m_pValue[m_unLength - 1] == cDelim))
@@ -282,6 +337,18 @@ void CString::Trim(const char cDelim)
    }
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Function:  Trim
+// Last Modified:  November 20th, 2023 (JB) 
+// Author:  Jason A. Biddle
+//
+// Purpose:  Removes the specified characters from the front and back of the string.
+//
+// In:  cFront - The character to be removed from the front.
+//      cBack - The character to be removed from the back.
+//
+// Out:  None
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CString::Trim(const char cFront, const char cBack)
 {
    if ((m_pValue[0] == cFront) && (m_pValue[m_unLength - 1] == cBack))
@@ -301,6 +368,18 @@ void CString::Trim(const char cFront, const char cBack)
    }
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Function:  Remove
+// Last Modified:  November 20th, 2023 (JB)
+// Author:  Jason A. Biddle
+//
+// Purpose:  Remove a section of the string.
+//
+// In:  nEnd - The end of the section of the string to be removed.
+//      nStart - The beginning of the section of the string to be removed, defaults to start of string.
+//
+// Out:  None
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CString::Remove(unsigned int nEnd, unsigned int nStart)
 {
    if (!inBounds(nStart, nEnd))
@@ -324,6 +403,18 @@ void CString::Remove(unsigned int nEnd, unsigned int nStart)
    this->m_pValue[unSize] = '\0';
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Function:  Substring
+// Last Modified:  November 20th, 2023 (JB)
+// Author:  Jason A. Biddle
+//
+// Purpose:  Returns the substring specified by End and Start points.
+//
+// In:  nEnd - The end of the substring.
+//      nStart - The start of the substring, defaults to beginning of the string.
+//
+// Out:  The desired substring.
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 CString CString::Substring(unsigned int nEnd, unsigned int nStart)const
 {
    CString sResult;
@@ -348,6 +439,17 @@ CString CString::Substring(unsigned int nEnd, unsigned int nStart)const
    return sResult;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Function:  Substring
+// Last Modified:  November 20th, 2023 (JB)
+// Author:  Jason A. Biddle
+//
+// Purpose:  Returns a substring ending at the first instance of a specified character.
+//
+// In:  cDelim - The stopping point for our substring, defaults to a space.
+//
+// Out:  Returns the substring that starts at 0 and ends at first instance of cDelim.
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 CString CString::Substring(const char cDelim)const
 {
    int nResult = this->Find(cDelim);
@@ -356,6 +458,18 @@ CString CString::Substring(const char cDelim)const
    return this->Substring(static_cast<unsigned int>(nResult));
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Function:  Find
+// Last Modified:  November 20th, 2023 (JB) 
+// Author:  Jason A. Biddle
+//
+// Purpose:  Returns the position of a specified character at a specified starting point.
+//
+// In:  cDelim - The character we're looking for.
+//      unStart - Where we start the search, defaults to the start of the string.
+//
+// Out:  The position of the first instance of specified character.
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int CString::Find(const char cDelim, unsigned int unStart)const
 {
    if (unStart > this->m_unLength)
@@ -371,11 +485,33 @@ int CString::Find(const char cDelim, unsigned int unStart)const
    return -1;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Function:  getCstr
+// Last Modified:  November 20th, 2023 (JB)
+// Author:  Jason A. Biddle
+//
+// Purpose:  Returns a C-style string.
+//
+// In:  None
+//
+// Out:  Returns the C-style string of this CString.
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const char* CString::getCstr() const
 {
    return m_pValue;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Function:  getChar
+// Last Modified:  November 20th, 2023 (JB)
+// Author:  Jason A. Biddle
+//
+// Purpose:  Returns the character at the specified location within the string.
+//
+// In:  nLocation - The position in the string.
+//
+// Out:  The character at the specified location.
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 char CString::getChar(unsigned int nLocation)
 {
    //Make sure we're inbounds, return a \0 if not!
@@ -384,6 +520,18 @@ char CString::getChar(unsigned int nLocation)
    return '\0';
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Function:  Copystr
+// Last Modified:  November 20th, 2023 (JB)
+// Author:  Jason A. Biddle
+//
+// Purpose:  Returns a copy of a C-style string please don't forget to delete alocated memory.
+//
+// In:  arcDestination - The character buffer that we're copying into.
+//      arcSource - The string that we're copying.
+//
+// Out:  None.
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Copystr(char *arcDestination, const char* arcSource)
 {
    size_t nSize = std::strlen(arcSource);
@@ -393,13 +541,25 @@ void Copystr(char *arcDestination, const char* arcSource)
    arcDestination[nSize] = '\0';
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Function:  inBounds
+// Last Modified:  November 19th, 2023 (JB)
+// Author:  Jason A. Biddle
+//
+// Purpose:  Checks to make sure that the two given points are within the bounds of the string.
+//
+// In:  nStart - The head of the boundary.
+//      nEnd - The tail of the boundary.
+//
+// Out:  true if in bounds, false otherwise.
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool CString::inBounds(unsigned int nStart, unsigned int nEnd) const
 {
-   if (nEnd < nStart)
+   if (nEnd < nStart)  //Are they backwards?
       return false;
-   else if ((nEnd < 0) || (nEnd > this->m_unLength))
+   else if ((nEnd < 0) || (nEnd > this->m_unLength))  //Is the end -1 or larger than the length?
       return false;
-   else if ((nStart < 0) || (nStart > this->m_unLength))
+   else if ((nStart < 0) || (nStart > this->m_unLength))  //Is the start -1 or larger than the length?
       return false;
 
    return true;
